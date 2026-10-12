@@ -1,0 +1,7 @@
+﻿backend/.env
+backend/tmp/
+frontend/node_modules/
+frontend/dist/
+frontend/.env
+*.exe
+*.test
