@@ -1,7 +1,7 @@
 # ── Build Go backend ───────────────────────────────────────────────────────────
 # Semua deps di vendor/ — tidak ada go mod download, tidak ada network call.
 # frontend/dist/ sudah pre-built ada di repo.
-FROM golang:1.22-alpine AS backend-builder
+FROM golang:1.24-alpine AS backend-builder
 
 WORKDIR /app/backend
 
