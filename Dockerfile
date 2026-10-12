@@ -4,10 +4,13 @@ FROM node:20-alpine AS frontend-builder
 WORKDIR /app/frontend
 
 COPY frontend/package*.json ./
-RUN npm ci --silent
+
+# npm install lebih toleran terhadap memory limit dibanding npm ci
+# --max-old-space-size membatasi heap Node agar tidak OOM di Railway free tier
+RUN node --max-old-space-size=512 $(which npm) install --legacy-peer-deps
 
 COPY frontend/ ./
-RUN npm run build
+RUN node --max-old-space-size=512 $(which npm) run build
 
 # ── Stage 2: Build Go backend ──────────────────────────────────────────────────
 FROM golang:1.23-alpine AS backend-builder
