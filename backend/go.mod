@@ -1,6 +1,6 @@
 module tabungan-siswa/backend
 
-go 1.21
+go 1.24.0
 
 require (
 	github.com/bytedance/gopkg v0.1.0 // indirect
@@ -37,7 +37,7 @@ require (
 	github.com/twitchyliquid64/golang-asm v0.15.1 // indirect
 	github.com/ugorji/go/codec v1.3.1 // indirect
 	go.mongodb.org/mongo-driver/v2 v2.0.0-beta1 // indirect
-	golang.org/x/arch v0.22.0 // indirect
+	golang.org/x/arch v0.8.0 // indirect
 	golang.org/x/crypto v0.17.0 // indirect
 	golang.org/x/net v0.19.0 // indirect
 	golang.org/x/sync v0.6.0 // indirect
