@@ -50,10 +50,16 @@ func Load() (*Config, error) {
 		StaticDir:          getEnv("STATIC_DIR", ""),
 	}
 
-	cfg.DBDsn = fmt.Sprintf(
-		"host=%s port=%s user=%s password=%s dbname=%s sslmode=disable TimeZone=Asia/Jakarta",
-		cfg.DBHost, cfg.DBPort, cfg.DBUser, cfg.DBPassword, cfg.DBName,
-	)
+	// Railway menyediakan DATABASE_URL lengkap — prioritaskan jika ada.
+	// Format: postgres://user:password@host:port/dbname
+	if dbURL := os.Getenv("DATABASE_URL"); dbURL != "" {
+		cfg.DBDsn = dbURL + "?sslmode=require&TimeZone=Asia/Jakarta"
+	} else {
+		cfg.DBDsn = fmt.Sprintf(
+			"host=%s port=%s user=%s password=%s dbname=%s sslmode=disable TimeZone=Asia/Jakarta",
+			cfg.DBHost, cfg.DBPort, cfg.DBUser, cfg.DBPassword, cfg.DBName,
+		)
+	}
 
 	return cfg, nil
 }
