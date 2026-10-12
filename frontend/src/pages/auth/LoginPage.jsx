@@ -18,8 +18,32 @@ export default function LoginPage() {
     mutationFn: () => authApi.login(form),
     onSuccess: ({ data }) => {
       setAuth(data.data.token, data.data.user)
-      toast.success(`Selamat datang, ${data.data.user.name}!`)
-      navigate(data.data.user.role === 'admin' ? '/admin' : '/wali')
+
+      // Splash alert sebelum masuk dashboard
+      toast.custom(
+        (t) => (
+          <div
+            className={`bg-white border border-blue-100 shadow-lg rounded-xl px-5 py-4 flex flex-col items-center gap-1 transition-all ${
+              t.visible ? 'opacity-100 scale-100' : 'opacity-0 scale-95'
+            }`}
+            style={{ minWidth: 280 }}
+          >
+            <span className="text-2xl">🐷</span>
+            <p className="text-sm font-semibold text-gray-800 text-center">
+              Made by <span className="text-blue-600">Syaghaf Mahardika</span>
+            </p>
+            <p className="text-xs text-gray-400 text-center">
+              Prototyping System Tracking Tabungan Siswa
+            </p>
+          </div>
+        ),
+        { duration: 2500, position: 'top-center' }
+      )
+
+      setTimeout(
+        () => navigate(data.data.user.role === 'admin' ? '/admin' : '/wali'),
+        800
+      )
     },
     onError: () => toast.error('Email atau password salah'),
   })
