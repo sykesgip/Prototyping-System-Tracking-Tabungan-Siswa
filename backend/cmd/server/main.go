@@ -64,8 +64,8 @@ func main() {
 	sched.Start()
 	defer sched.Stop()
 
-	// Router
-	engine := router.Setup(tm, cfg.CORSAllowedOrigins, handlers)
+	// Router — serve frontend dist if STATIC_DIR env var is set
+	engine := router.Setup(tm, cfg.CORSAllowedOrigins, cfg.StaticDir, handlers)
 
 	srv := &http.Server{
 		Addr:    ":" + cfg.AppPort,

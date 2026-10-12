@@ -1,6 +1,7 @@
 package router
 
 import (
+	"net/http"
 	"strings"
 
 	"tabungan-siswa/backend/internal/delivery/http/handler"
@@ -19,12 +20,24 @@ type Handlers struct {
 	Reminder   *handler.ReminderHandler
 }
 
-func Setup(tm *token.Manager, allowedOrigins string, h Handlers) *gin.Engine {
+// Setup wires all routes.
+// staticDir: path to the built frontend dist folder (empty = API-only mode).
+func Setup(tm *token.Manager, allowedOrigins string, staticDir string, h Handlers) *gin.Engine {
 	r := gin.New()
 	r.Use(gin.Logger(), gin.Recovery())
-	r.Use(corsMiddleware(allowedOrigins))
+
+	// CORS only needed when frontend is on a different origin (dev proxy / Vercel).
+	// When serving static from the same Go process CORS is a no-op but kept for flexibility.
+	if allowedOrigins != "" {
+		r.Use(corsMiddleware(allowedOrigins))
+	}
 
 	api := r.Group("/api")
+
+	// Health check (Railway, uptime monitors)
+	api.GET("/health", func(c *gin.Context) {
+		c.JSON(http.StatusOK, gin.H{"status": "ok"})
+	})
 
 	// Public
 	auth := api.Group("/auth")
@@ -70,6 +83,20 @@ func Setup(tm *token.Manager, allowedOrigins string, h Handlers) *gin.Engine {
 		wali.POST("/withdrawals", h.Withdrawal.Create)
 		wali.GET("/reminder", h.Reminder.Get)
 		wali.PUT("/reminder", h.Reminder.Upsert)
+	}
+
+	// Serve compiled React SPA — all non-/api routes fall through to index.html
+	if staticDir != "" {
+		r.Static("/assets", staticDir+"/assets")
+		r.StaticFile("/favicon.svg", staticDir+"/favicon.svg")
+		// Catch-all: return index.html so React Router handles client-side navigation
+		r.NoRoute(func(c *gin.Context) {
+			if !strings.HasPrefix(c.Request.URL.Path, "/api") {
+				c.File(staticDir + "/index.html")
+				return
+			}
+			c.JSON(http.StatusNotFound, gin.H{"error": "not found"})
+		})
 	}
 
 	return r

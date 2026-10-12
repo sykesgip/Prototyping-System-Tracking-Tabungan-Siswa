@@ -23,6 +23,9 @@ type Config struct {
 	JWTExpiryHours int
 
 	CORSAllowedOrigins string
+	// StaticDir: absolute/relative path to the compiled frontend dist.
+	// When set, Go serves the React SPA (used in production / Railway).
+	StaticDir string
 }
 
 func Load() (*Config, error) {
@@ -43,7 +46,8 @@ func Load() (*Config, error) {
 		DBName:             getEnv("DB_NAME", "tabungan_siswa"),
 		JWTSecret:          getEnv("JWT_SECRET", "changeme"),
 		JWTExpiryHours:     expiryHours,
-		CORSAllowedOrigins: getEnv("CORS_ALLOWED_ORIGINS", "http://localhost:5173"),
+		CORSAllowedOrigins: getEnv("CORS_ALLOWED_ORIGINS", ""),
+		StaticDir:          getEnv("STATIC_DIR", ""),
 	}
 
 	cfg.DBDsn = fmt.Sprintf(

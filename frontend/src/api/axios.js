@@ -1,14 +1,9 @@
 import axios from 'axios'
 import { useAuthStore } from '../store/authStore'
 
-// In dev the Vite proxy rewrites /api → localhost:8080.
-// In production (Vercel) VITE_API_URL points to the Railway backend URL.
-const baseURL = import.meta.env.VITE_API_URL
-  ? `${import.meta.env.VITE_API_URL}/api`
-  : '/api'
-
+// Always /api — in dev Vite proxy forwards to :8080, in prod Go serves the SPA.
 const api = axios.create({
-  baseURL,
+  baseURL: '/api',
   headers: { 'Content-Type': 'application/json' },
 })
 
